@@ -40,7 +40,7 @@ class MyWindow(QtGui.QWidget):
         objects = yaml.load(open("objects.yml", "rU"))
         self.els_from_yml = NameElement.generateFromDict(objects)
 
-        self.model_from_yml = NamesModel(self.els_from_yml)
+        self.model_from_yml = NamesModel(self.els_from_yml, headers=["Parameter", "Value"])
 
         self.treeview.setModel(self.model_from_yml)
         self.layout().addRow(self.treeview)

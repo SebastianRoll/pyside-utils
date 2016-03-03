@@ -61,9 +61,9 @@ class NamedNode(TreeNode):
 
 
 
-
 class NamesModel(TreeModelSimple):
-    def __init__(self, rootElements):
+    def __init__(self, rootElements, headers=None):
+        self.headers = ["Name"] if not headers else headers
         self.rootElements = rootElements
         TreeModelSimple.__init__(self)
 
@@ -72,7 +72,7 @@ class NamesModel(TreeModelSimple):
             for index, elem in enumerate(self.rootElements)]
 
     def columnCount(self, parent):
-        return 1
+        return len(self.headers)
 
     def data(self, index, role):
         if not index.isValid():
@@ -83,9 +83,8 @@ class NamesModel(TreeModelSimple):
         return None
 
     def headerData(self, section, orientation, role):
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole \
-                and section == 0:
-            return 'Name'
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+            return self.headers[section]
         return None
 
 
