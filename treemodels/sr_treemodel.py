@@ -7,6 +7,7 @@ from treemodel_pyside_example import NamesModel
 
 
 class NameElement(object): # your internal structure
+
     def __init__(self, name, subelements):
         # todo - accept name as single constructor argument
         self.name = name
@@ -17,12 +18,17 @@ class NameElement(object): # your internal structure
         # todo - handle dict with multiple keys
         sibling_elements = []
         if isinstance(input, dict):
+            # if non of the dict values are themselves dicts
+            if not any([isinstance(val, dict) for val in input.values()]):
+                return [cls([key, val], []) for key,val in input.items()]
             #for key, values in input.items():
-            return ([cls(key, cls.generateFromDict(val)) for key,val in input.items()])
+            return ([cls([key], cls.generateFromDict(val)) for key,val in input.items()])
             return sibling_elements
+
         elif isinstance(input, list):
-            return ([cls("list", cls.generateFromDict(val)) for val in input])
+            return ([cls(["list"], cls.generateFromDict(val)) for val in input])
             return sibling_elements
+
         else:
             return cls(input, [])
         # todo - handle input as list

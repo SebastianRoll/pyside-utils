@@ -51,6 +51,10 @@ class TreeModelSimple(QAbstractItemModel):
 
 
 class NamedNode(TreeNode):
+
+    @property
+    def itemData(self): return self.ref.name
+
     def __init__(self, ref, parent, row):
         self.ref = ref
         TreeNode.__init__(self, parent, row)
@@ -58,6 +62,20 @@ class NamedNode(TreeNode):
     def _getChildren(self):
         return [NamedNode(elem, self, index)
             for index, elem in enumerate(self.ref.subelements)]
+
+    def data(self, column):
+        if len(self.ref.name) >= column + 1:
+            return self.itemData[column]
+        else:
+            return None
+
+    def setData(self, column, value):
+        if column < 0 or column >= len(self.itemData):
+            return False
+
+        self.itemData[column] = value
+
+        return True
 
 
 
@@ -77,15 +95,45 @@ class NamesModel(TreeModelSimple):
     def data(self, index, role):
         if not index.isValid():
             return None
+
+        if role != QtCore.Qt.DisplayRole and role != QtCore.Qt.EditRole:
+            return None
+
+        item = self.getItem(index)
+        return item.data(index.column())
+        '''
         node = index.internalPointer()
-        if role == Qt.DisplayRole and index.column() == 0:
+        if role == Qt.DisplayRole:
             return node.ref.name
-        return None
+        return None'''
+
+    def flags(self, index):
+        if not index.isValid():
+            return 0
+
+        return QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+
+    def getItem(self, index):
+        if index.isValid():
+            item = index.internalPointer()
+            if item:
+                return item
 
     def headerData(self, section, orientation, role):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return self.headers[section]
         return None
 
+    def setData(self, index, value, role=QtCore.Qt.EditRole):
+        if role != QtCore.Qt.EditRole:
+            return False
+
+        item = self.getItem(index)
+        result = item.setData(index.column(), value)
+
+        if result:
+            self.dataChanged.emit(index, index)
+
+        return result
 
 
