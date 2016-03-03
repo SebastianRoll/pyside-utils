@@ -15,13 +15,10 @@ class NameElement(object): # your internal structure
 
     @classmethod
     def generateFromDict(cls, input):
-        # todo - handle dict with multiple keys
-        sibling_elements = []
         if isinstance(input, dict):
-            # if non of the dict values are themselves dicts
+            # if non of the dict values are themselves dicts:
             if not any([isinstance(val, dict) for val in input.values()]):
                 return [cls([key, val], []) for key,val in input.items()]
-            #for key, values in input.items():
             return ([cls([key], cls.generateFromDict(val)) for key,val in input.items()])
             return sibling_elements
 
@@ -31,7 +28,6 @@ class NameElement(object): # your internal structure
 
         else:
             return cls(input, [])
-        # todo - handle input as list
 
     @classmethod
     def generateFromNestedList(cls, input):
