@@ -1,3 +1,5 @@
+from PySide import QtCore
+
 from PySide.QtCore import QAbstractItemModel, QModelIndex, Qt
 
 
@@ -44,8 +46,6 @@ class TreeModelSimple(QAbstractItemModel):
             return len(self.rootNodes)
         node = parent.internalPointer()
         return len(node.subnodes)
-
-
 
 
 
