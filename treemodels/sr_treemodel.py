@@ -17,10 +17,13 @@ class NameElement(object): # your internal structure
     def generateFromDict(cls, input):
         if isinstance(input, dict):
             # if non of the dict values are themselves dicts:
-            if not any([isinstance(val, dict) for val in input.values()]):
-                return [cls([key, val], []) for key,val in input.items()]
-            return ([cls([key], cls.generateFromDict(val)) for key,val in input.items()])
-            return sibling_elements
+            return_list = []
+            for key, val in input.items():
+                if isinstance(val, dict):
+                    return_list.append(cls([key], cls.generateFromDict(val)))
+                else:
+                    return_list.append(cls([key, val], []))
+            return return_list
 
         elif isinstance(input, list):
             return ([cls(["list"], cls.generateFromDict(val)) for val in input])
