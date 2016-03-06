@@ -12,6 +12,15 @@ class TreeNode(object):
     def _getChildren(self):
         raise NotImplementedError()
 
+    def row_path(self):
+        '''rowpath = [self.row]
+        if self.parent is not None:
+            rowpath.append(self.parent.row_path())'''
+        if self.parent is not None:
+            return self.parent.row_path(), self.row
+        else:
+            return self.row
+
 
 
 class TreeModelSimple(QAbstractItemModel):
@@ -74,9 +83,15 @@ class NamedNode(TreeNode):
             return False
 
         self.itemData[column] = value
+        print "in treenode.setData()"
+        print self.row_path()
 
         return True
 
+    def add_subelement(self, name_element):
+        row = len(self.ref.subelements)
+        self.ref.subelements.append(name_element)
+        return NamedNode(name_element, self, row)
 
 
 class NamesModel(TreeModelSimple):
@@ -136,4 +151,14 @@ class NamesModel(TreeModelSimple):
 
         return result
 
+    #--- Public
+    def findIndex(self, rowPath):
+        """Returns the QModelIndex at `rowPath`
 
+        `rowPath` is a sequence of node rows. For example, [1, 2, 1] is the 2nd child of the
+        3rd child of the 2nd child of the root.
+        """
+        result = QModelIndex()
+        for row in rowPath:
+            result = self.index(row, 0, result)
+        return result
