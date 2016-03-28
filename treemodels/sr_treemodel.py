@@ -9,9 +9,18 @@ from treemodel_pyside_example import NamesModel
 class NameElement(object): # your internal structure
 
     def __init__(self, name, subelements):
-        # todo - accept name as single constructor argument
         self.name = name
         self.subelements = subelements if isinstance(subelements, list) else [subelements]
+
+    def __getitem__(self, key):
+        item = filter(lambda x: x.name[0] == key, self.subelements)
+        if len(item) > 1:
+            raise Exception("More than one element named {} in subelements".format(key))
+        elif len(item) < 1:
+            return IndexError("{} was not found among subelements of NameElement".format(key))
+        else:
+            return item[0]
+
 
     @classmethod
     def generateFromDict(cls, input):
